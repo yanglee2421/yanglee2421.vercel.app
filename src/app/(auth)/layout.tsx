@@ -10,7 +10,7 @@ export default function AuthLayout(props: React.PropsWithChildren) {
         </div>
       }
     >
-      <AuthGuard>{props.children}</AuthGuard>;
+      <AuthGuard>{props.children}</AuthGuard>
     </React.Suspense>
   );
 }
