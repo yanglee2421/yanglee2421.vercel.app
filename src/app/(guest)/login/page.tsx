@@ -11,9 +11,7 @@ export default function Login() {
       login
       <button
         onClick={() => {
-          startTransition(async () => {
-            await LoginAction();
-          });
+          startTransition(LoginAction);
         }}
         disabled={isPending}
       >
