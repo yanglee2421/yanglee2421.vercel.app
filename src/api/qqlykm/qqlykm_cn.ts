@@ -18,8 +18,7 @@ qqlykm_cn.interceptors.response.use(
   (res) => res,
   (error) => {
     if (error instanceof AxiosError) {
-      console.error(error.message);
-      console.log(error.response);
+      console.log("errorlog", error.response?.data);
     }
 
     throw error;
