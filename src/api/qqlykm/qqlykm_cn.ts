@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 export const qqlykm_cn = axios.create({
   timeout: 1000 * 30,
@@ -13,3 +13,15 @@ qqlykm_cn.interceptors.request.use((config) => {
 
   return config;
 });
+
+qqlykm_cn.interceptors.response.use(
+  (res) => res,
+  (error) => {
+    if (error instanceof AxiosError) {
+      console.error(error.message);
+      console.log(error.response);
+    }
+
+    throw error;
+  },
+);
