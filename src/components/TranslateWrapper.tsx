@@ -10,52 +10,48 @@ type Props = React.PropsWithChildren<{
 }>;
 
 const langs = new Set(["en", "zh"]);
-const getLang = (path: string, store: string) => {
-  const fallback = langs.has(store) ? store : "en";
-
-  if (!path) {
-    return fallback;
+const getMatchedLang = (path: string, store: string) => {
+  if (langs.has(path)) {
+    return path;
   }
 
-  if (!langs.has(path)) {
-    return fallback;
+  if (langs.has(store)) {
+    return store;
   }
 
-  return path;
+  return "en";
 };
 
 export function TranslateWrapper(props: Props) {
-  const pathname = usePathname();
-  const storeLang = useLangStore((s) => s.lang);
-  const setStoreLang = useLangStore((s) => s.set);
   const hasHydrated = React.useSyncExternalStore(
-    (onStateChange) => useLangStore.persist.onFinishHydration(onStateChange),
+    (onStoreChange) => useLangStore.persist.onFinishHydration(onStoreChange),
     () => useLangStore.persist.hasHydrated(),
     () => false,
   );
-
-  React.useEffect(() => {
-    if (!hasHydrated) {
-      return;
-    }
-
-    const lang = getLang(props.lang, storeLang);
-
-    if (lang === storeLang) {
-      return;
-    }
-
-    setStoreLang({ lang });
-  }, [setStoreLang, props.lang, storeLang, hasHydrated]);
 
   if (!hasHydrated) {
     return props.fallback;
   }
 
-  const lang = getLang(props.lang, storeLang);
+  return <Outlet lang={props.lang}>{props.children}</Outlet>;
+}
 
-  if (props.lang !== lang) {
-    return redirect(`/${lang + pathname}`);
+function Outlet(props: Props) {
+  const pathname = usePathname();
+  const storeLang = useLangStore((s) => s.lang);
+  const setStoreLang = useLangStore((s) => s.set);
+  const matchedLang = getMatchedLang(props.lang, storeLang);
+
+  React.useEffect(() => {
+    if (matchedLang === storeLang) {
+      return;
+    }
+
+    setStoreLang({ lang: matchedLang });
+  }, [setStoreLang, matchedLang, storeLang]);
+
+  if (props.lang !== matchedLang) {
+    return redirect(`/${matchedLang + pathname}`);
   }
 
   return props.children;
