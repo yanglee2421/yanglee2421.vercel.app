@@ -9,17 +9,18 @@ type Props = React.PropsWithChildren<{
   fallback?: React.ReactNode;
 }>;
 
-const langs = new Set(["en", "zh"]);
+const LANGS = new Set(["en", "zh"]);
+const FALLBACK_LANG = "en";
 const getMatchedLang = (path: string, store: string) => {
-  if (langs.has(path)) {
+  if (LANGS.has(path)) {
     return path;
   }
 
-  if (langs.has(store)) {
+  if (LANGS.has(store)) {
     return store;
   }
 
-  return "en";
+  return FALLBACK_LANG;
 };
 
 export function TranslateWrapper(props: Props) {
