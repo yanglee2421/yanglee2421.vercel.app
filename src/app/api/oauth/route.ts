@@ -6,5 +6,5 @@ export async function GET(req: Request) {
 
   console.log(data);
 
-  return Response.json({ code: 200 });
+  return Response.json(data);
 }
