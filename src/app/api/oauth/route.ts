@@ -1,6 +1,6 @@
 import { URL } from "node:url";
 
-export async function Get(req: Request) {
+export async function GET(req: Request) {
   const url = new URL(req.url);
   const data = Object.fromEntries(url.searchParams.entries());
 
