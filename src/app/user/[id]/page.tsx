@@ -2,12 +2,13 @@ import { prisma } from "@src/db/db";
 import { revalidatePath } from "next/cache";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export default async function Page(props: Props) {
+  const { id } = await props.params;
   const user = await prisma.user.findUniqueOrThrow({
-    where: { id: props.params.id },
+    where: { id },
   });
 
   return (
@@ -26,7 +27,7 @@ export default async function Page(props: Props) {
 
           await prisma.user.update({
             where: {
-              id: props.params.id,
+              id,
             },
             data: { ...restUser, name },
           });
