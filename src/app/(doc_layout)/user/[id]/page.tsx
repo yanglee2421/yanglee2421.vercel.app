@@ -32,7 +32,7 @@ export default async function Page(props: Props) {
             data: { ...restUser, name },
           });
 
-          revalidatePath("/");
+          revalidatePath("/", "layout");
         }}
       >
         <div>
@@ -40,7 +40,7 @@ export default async function Page(props: Props) {
             type="text"
             name="name"
             defaultValue={user.name || ""}
-            className=" text-black"
+            className="text-black"
           />
         </div>
         <div>
