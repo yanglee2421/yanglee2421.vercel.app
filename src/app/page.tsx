@@ -22,7 +22,14 @@ import {
   SidebarTrigger,
 } from "@src/components/ui/sidebar";
 import Link from "next/link";
-import { Atom, ChevronRight, ChevronsUpDown, HomeIcon } from "lucide-react";
+import {
+  Atom,
+  ChevronRight,
+  ChevronsUpDown,
+  HomeIcon,
+  MoonStar,
+  Sun,
+} from "lucide-react";
 import {
   Collapsible,
   CollapsibleTrigger,
@@ -37,12 +44,17 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@src/components/ui/breadcrumb";
+import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
+import { Button } from "@src/components/ui/button";
 
 export default async function Home() {
   const code = await readFile(
     resolve(process.cwd(), "public", "handbook.md"),
     "utf-8",
   );
+  const cookie = await cookies();
+  const mode = cookie.get("mode")?.value;
 
   return (
     <SidebarProvider>
@@ -80,12 +92,12 @@ export default async function Home() {
                     <CollapsibleContent>
                       <SidebarMenuSub>
                         <SidebarMenuSubItem>
-                          <SidebarMenuSubButton>
-                            <Link href="/">home</Link>
+                          <SidebarMenuSubButton asChild>
+                            <Link href="/404">home</Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                         <SidebarMenuSubItem>
-                          <SidebarMenuSubButton>
+                          <SidebarMenuSubButton asChild>
                             <Link href="/">home</Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
@@ -139,12 +151,12 @@ export default async function Home() {
                     <CollapsibleContent>
                       <SidebarMenuSub>
                         <SidebarMenuSubItem>
-                          <SidebarMenuSubButton>
+                          <SidebarMenuSubButton asChild>
                             <Link href="/">home</Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                         <SidebarMenuSubItem>
-                          <SidebarMenuSubButton>
+                          <SidebarMenuSubButton asChild>
                             <Link href="/">home</Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
@@ -166,12 +178,12 @@ export default async function Home() {
                     <CollapsibleContent>
                       <SidebarMenuSub>
                         <SidebarMenuSubItem>
-                          <SidebarMenuSubButton>
+                          <SidebarMenuSubButton asChild>
                             <Link href="/">home</Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                         <SidebarMenuSubItem>
-                          <SidebarMenuSubButton>
+                          <SidebarMenuSubButton asChild>
                             <Link href="/">home</Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
@@ -187,7 +199,7 @@ export default async function Home() {
         <SidebarRail />
       </Sidebar>
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+        <header className="sticky top-0 flex h-16 w-full shrink-0 items-center gap-2 border-b bg-background px-4">
           <SidebarTrigger className="-ms-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
           <Breadcrumb>
@@ -203,6 +215,19 @@ export default async function Home() {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
+          <form
+            action={async () => {
+              "use server";
+              const cookie = await cookies();
+              cookie.set("mode", mode === "dark" ? "" : "dark");
+              revalidatePath("/");
+            }}
+            className="ms-auto"
+          >
+            <Button size={"icon"} variant={"ghost"}>
+              {mode === "dark" ? <Sun /> : <MoonStar />}
+            </Button>
+          </form>
         </header>
         <div className="p-4">
           <article className="prose prose-sm mx-auto sm:prose-base md:prose-lg lg:prose-xl xl:prose-2xl dark:prose-h1:text-foreground dark:prose-h2:text-foreground dark:prose-p:text-foreground dark:prose-blockquote:text-foreground dark:prose-code:text-foreground dark:prose-code:text-orange-500 dark:prose-li:text-foreground dark:marker:prose-li:text-foreground dark:prose-th:text-foreground dark:prose-td:text-foreground">
