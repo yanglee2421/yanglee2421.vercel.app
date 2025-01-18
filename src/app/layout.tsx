@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { cookies } from "next/headers";
+import { ThemeProvider } from "@src/components/ThemeProvider";
 
 export const metadata: Metadata = {
   title: "Vercel.App",
@@ -12,12 +12,18 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookie = await cookies();
-  const dark = cookie.get("mode");
-
   return (
-    <html lang="en" className={dark?.value}>
-      <body>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
