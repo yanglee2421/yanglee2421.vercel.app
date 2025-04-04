@@ -1,37 +1,8 @@
 import { generateKeyPair, publicEncrypt, privateDecrypt } from "node:crypto";
 import { promisify } from "node:util";
-import { exec } from "node:child_process";
 import QrCode from "./QrCode";
 
 const generateKeyPairAsync = promisify(generateKeyPair);
-const execAsync = promisify(exec);
-
-// Too slow for production 2s
-const getCpuSerial = async () => {
-  const data = await execAsync(
-    "Get-CimInstance -ClassName Win32_Processor | Select-Object ProcessorId",
-    { shell: "powershell" },
-  );
-
-  if (data.stderr) {
-    throw data.stderr;
-  }
-
-  return data.stdout;
-};
-
-const getMotherboardSerial = async () => {
-  const data = await execAsync(
-    "Get-WmiObject win32_baseboard | Select-Object SerialNumber",
-    { shell: "powershell" },
-  );
-
-  if (data.stderr) {
-    throw data.stderr;
-  }
-
-  return data.stdout;
-};
 
 export default async function Lab() {
   const { publicKey, privateKey } = await generateKeyPairAsync("rsa", {
@@ -46,13 +17,12 @@ export default async function Lab() {
     },
   });
 
-  const motherboardSerial = await getMotherboardSerial();
-  const data = motherboardSerial;
+  const data = "522A49SMP00037EP000G";
   const encryptedData = publicEncrypt(publicKey, Buffer.from(data));
-  const encryptedDataString = encryptedData.toString("hex");
+  const encryptedDataString = encryptedData.toString("base64");
   const decryptedData = privateDecrypt(
     privateKey,
-    Buffer.from(encryptedDataString, "hex"),
+    Buffer.from(encryptedDataString, "base64"),
   );
   const decryptedDataString = decryptedData.toString("utf-8");
 
