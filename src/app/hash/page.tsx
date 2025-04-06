@@ -3,7 +3,13 @@ import * as crypto from "node:crypto";
 export default function Hash() {
   const data = "522A49SMP00037EP000G";
 
-  const hash = crypto.createHash("md5").update(data).digest("hex");
+  const hash = crypto
+    .createHash("md5")
+    .update(data)
+    .digest("hex")
+    .toUpperCase();
+
+  const id = crypto.randomUUID().slice(0, 8).toUpperCase();
 
   return (
     <div className="flex h-full w-full flex-col gap-4">
@@ -13,6 +19,9 @@ export default function Hash() {
       </p>
       <pre>
         <code>{hash}</code>
+      </pre>
+      <pre>
+        <code>{id}</code>
       </pre>
     </div>
   );
