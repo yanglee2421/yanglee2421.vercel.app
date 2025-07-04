@@ -52,7 +52,7 @@ export const Markdown = (props: MarkdownProps) => (
           </code>
         );
       },
-      pre: React.Fragment,
+      // pre: React.Fragment,
     }}
   >
     {props.code}
