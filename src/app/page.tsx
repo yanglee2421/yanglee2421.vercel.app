@@ -1,15 +1,48 @@
-import { Button } from "@/components/ui/button";
-import { cookies } from "next/headers";
 import Image from "next/image";
+import ModbusRTU from "modbus-serial";
+import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { Button } from "@/components/ui/button";
 
 const modeAction = async () => {
   "use server";
 
   const cookie = await cookies();
   const mode = cookie.get("mode");
-  mode ? cookie.delete("mode") : cookie.set("mode", "1");
+
+  if (mode) {
+    cookie.delete("mode");
+  } else {
+    cookie.set("mode", "1");
+  }
+
   revalidatePath("/");
+};
+
+const darkAction = async () => {
+  "use server";
+
+  const cookie = await cookies();
+  const dark = cookie.get("dark");
+
+  if (dark) {
+    cookie.delete("dark");
+  } else {
+    cookie.set("dark", "1");
+  }
+
+  revalidatePath("/");
+};
+
+const modbusAction = async () => {
+  "use server";
+
+  const client = new ModbusRTU();
+  await client.connectRTUBuffered("COM1", { baudRate: 9600 });
+  client.writeCoil(0, true);
+  client.close(() => {
+    console.log("close com1");
+  });
 };
 
 export default async function Home() {
@@ -25,6 +58,11 @@ export default async function Home() {
           <form action={modeAction} className="sm:hidden">
             <button type="submit" className="cursor-pointer">
               menu
+            </button>
+          </form>
+          <form action={darkAction}>
+            <button type="submit" className="cursor-pointer">
+              dark
             </button>
           </form>
         </header>
@@ -52,7 +90,9 @@ export default async function Home() {
               height={20}
               priority
             />
-            <Button>Click me</Button>
+            <form action={modbusAction}>
+              <Button type="submit">Click me</Button>
+            </form>
           </main>
           <footer className="p-6">&copy;2025 created by Lee</footer>
         </div>
