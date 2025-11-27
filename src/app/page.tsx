@@ -1,8 +1,8 @@
 import Image from "next/image";
-import { SerialPort } from "serialport";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { Button } from "@/components/ui/button";
+import { FXPLCClient, TransportSerial } from "node-fxplc";
 
 const modeAction = async () => {
   "use server";
@@ -34,55 +34,46 @@ const darkAction = async () => {
   revalidatePath("/");
 };
 
-const modbusAction = async () => {
+const rs232Action = async () => {
   "use server";
 
-  const serialport = new SerialPort({
-    path: "COM1",
+  const transport = new TransportSerial({
+    path: "COM3",
     baudRate: 9600,
-    dataBits: 7,
-    stopBits: 1,
-    parity: "even",
+    timeout: 1500,
   });
+  const plc = new FXPLCClient(transport, { debug: true });
+  const bit = await plc.readBit("M0");
+  console.log("M0 =", bit);
+  plc.close();
 
-  // MC Protocol (Mitsubishi) 指令构建：设置 Y37 为 ON
-  // 使用二进制 MC 协议 (Binary MC Protocol)
-  // 帧格式: 副报头(2) + PC号(1) + IO号(2) + 扩展(2) + 数据长度(2) + CPU监视定时器(2) + 命令(2) + 子命令(2) + 设备代码(2) + 起始地址(4) + 点数(2) + 数据 + CRC(2)
-
-  // Y37 设备设置指令：设置输出 Y37 为 ON (1)
-  // Y37 对应地址: 0x01250 (Hex) 或 4688 (Dec) - 100进制: 37
-  const buffer = Buffer.from([
-    0x50,
-    0x00, // 副报头 (Subheader)
-    0xff, // PC号
-    0x03,
-    0x00, // IO号
-    0x00,
-    0x00, // 扩展
-    0x0c,
-    0x00, // 数据长度 (12 bytes)
-    0x00,
-    0x00, // CPU监视定时器
-    0x14,
-    0x01, // 命令 (0x0114 - Write Devices)
-    0x00,
-    0x00, // 子命令
-    0x59, // 设备代码 (0x59 = Y 输出)
-    0x25,
-    0x00,
-    0x00,
-    0x00, // 起始地址 (Y37 = 0x00000025 in decimal 37)
-    0x01,
-    0x00, // 点数 (1个点)
-    0x01, // 数据 (1 = ON)
-    0x00,
-    0x00, // CRC16 (简化为0，实际应计算)
+  const body = Buffer.concat([
+    Buffer.from("0", "ascii"),
+    Buffer.from("10F6", "ascii"),
+    Buffer.from("04", "ascii"),
+    Buffer.from([0x03]),
   ]);
 
-  serialport.write(buffer);
+  const list = [...body];
+  const sum = list.reduce((result, item) => result + item, 0);
+  const checkSumString = sum.toString(16).slice(-2);
 
-  serialport.close();
+  console.log(
+    Buffer.concat([
+      Buffer.from([0x02]),
+      body,
+      Buffer.from(checkSumString, "ascii"),
+    ]),
+  );
 };
+
+const makeYAddress = () => {
+  return 0x100 + Number.parseInt("0x23", 16) / 8;
+};
+
+const yAddress = makeYAddress();
+
+console.log("yaddress", Buffer.from([yAddress]));
 
 export default async function Home() {
   const cookie = await cookies();
@@ -129,7 +120,7 @@ export default async function Home() {
               height={20}
               priority
             />
-            <form action={modbusAction}>
+            <form action={rs232Action}>
               <Button type="submit">Click me</Button>
             </form>
           </main>
