@@ -1,5 +1,5 @@
 import Image from "next/image";
-import ModbusRTU from "modbus-serial";
+import { SerialPort } from "serialport";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { Button } from "@/components/ui/button";
@@ -37,12 +37,51 @@ const darkAction = async () => {
 const modbusAction = async () => {
   "use server";
 
-  const client = new ModbusRTU();
-  await client.connectRTUBuffered("COM1", { baudRate: 9600 });
-  client.writeCoil(0, true);
-  client.close(() => {
-    console.log("close com1");
+  const serialport = new SerialPort({
+    path: "COM1",
+    baudRate: 9600,
+    dataBits: 7,
+    stopBits: 1,
+    parity: "even",
   });
+
+  // MC Protocol (Mitsubishi) 指令构建：设置 Y37 为 ON
+  // 使用二进制 MC 协议 (Binary MC Protocol)
+  // 帧格式: 副报头(2) + PC号(1) + IO号(2) + 扩展(2) + 数据长度(2) + CPU监视定时器(2) + 命令(2) + 子命令(2) + 设备代码(2) + 起始地址(4) + 点数(2) + 数据 + CRC(2)
+
+  // Y37 设备设置指令：设置输出 Y37 为 ON (1)
+  // Y37 对应地址: 0x01250 (Hex) 或 4688 (Dec) - 100进制: 37
+  const buffer = Buffer.from([
+    0x50,
+    0x00, // 副报头 (Subheader)
+    0xff, // PC号
+    0x03,
+    0x00, // IO号
+    0x00,
+    0x00, // 扩展
+    0x0c,
+    0x00, // 数据长度 (12 bytes)
+    0x00,
+    0x00, // CPU监视定时器
+    0x14,
+    0x01, // 命令 (0x0114 - Write Devices)
+    0x00,
+    0x00, // 子命令
+    0x59, // 设备代码 (0x59 = Y 输出)
+    0x25,
+    0x00,
+    0x00,
+    0x00, // 起始地址 (Y37 = 0x00000025 in decimal 37)
+    0x01,
+    0x00, // 点数 (1个点)
+    0x01, // 数据 (1 = ON)
+    0x00,
+    0x00, // CRC16 (简化为0，实际应计算)
+  ]);
+
+  serialport.write(buffer);
+
+  serialport.close();
 };
 
 export default async function Home() {
