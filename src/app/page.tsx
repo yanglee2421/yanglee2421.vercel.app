@@ -1,5 +1,5 @@
 import Image from "next/image";
-import ModbusRTU from "modbus-serial";
+import { TransportSerial, FXPLCClient } from "node-fxplc";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { Button } from "@/components/ui/button";
@@ -37,12 +37,20 @@ const darkAction = async () => {
 const modbusAction = async () => {
   "use server";
 
-  const client = new ModbusRTU();
-  await client.connectRTUBuffered("COM1", { baudRate: 9600 });
-  client.writeCoil(0, true);
-  client.close(() => {
-    console.log("close com1");
+  const port = new TransportSerial({
+    path: "COM1",
+    baudRate: 9600,
+    timeout: 1000 * 15,
   });
+
+  const plc = new FXPLCClient(port);
+
+  try {
+    const bit = await plc.readBit("X23");
+    await plc.writeBit("Y0", bit);
+  } finally {
+    plc.close();
+  }
 };
 
 export default async function Home() {
