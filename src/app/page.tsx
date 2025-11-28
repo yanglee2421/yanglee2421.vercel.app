@@ -3,6 +3,7 @@ import { TransportSerial, FXPLCClient } from "node-fxplc";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { Button } from "@/components/ui/button";
+import { FXPLCClient, TransportSerial } from "node-fxplc";
 
 const modeAction = async () => {
   "use server";
@@ -34,7 +35,7 @@ const darkAction = async () => {
   revalidatePath("/");
 };
 
-const modbusAction = async () => {
+const rs232Action = async () => {
   "use server";
 
   const port = new TransportSerial({
@@ -98,7 +99,7 @@ export default async function Home() {
               height={20}
               priority
             />
-            <form action={modbusAction}>
+            <form action={rs232Action}>
               <Button type="submit">Click me</Button>
             </form>
           </main>
