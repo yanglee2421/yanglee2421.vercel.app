@@ -1,9 +1,8 @@
 import Image from "next/image";
-import { TransportSerial, FXPLCClient } from "node-fxplc";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { TransportSerial, FXPLCClient } from "node-fxplc";
 import { Button } from "@/components/ui/button";
-import { FXPLCClient, TransportSerial } from "node-fxplc";
 
 const modeAction = async () => {
   "use server";
