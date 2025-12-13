@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { TransportSerial, FXPLCClient } from "node-fxplc";
+import { Menu, MoonStar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const modeAction = async () => {
@@ -34,25 +34,6 @@ const darkAction = async () => {
   revalidatePath("/");
 };
 
-const rs232Action = async () => {
-  "use server";
-
-  const port = new TransportSerial({
-    path: "COM1",
-    baudRate: 9600,
-    timeout: 1000 * 15,
-  });
-
-  const plc = new FXPLCClient(port);
-
-  try {
-    const bit = await plc.readBit("X23");
-    await plc.writeBit("Y0", bit);
-  } finally {
-    plc.close();
-  }
-};
-
 export default async function Home() {
   const cookie = await cookies();
   const mode = cookie.get("mode");
@@ -61,17 +42,24 @@ export default async function Home() {
     <>
       <div>
         <header className="fixed z-10 flex h-16 w-full items-center justify-start border-b border-slate-300 p-4 backdrop-blur-xs">
-          <h2 className="text-2xl">App Name</h2>
+          <Image
+            className="dark:invert"
+            src="/next.svg"
+            alt="Next.js logo"
+            width={100}
+            height={20}
+            priority
+          />
           <div className="ms-auto"></div>
           <form action={modeAction} className="sm:hidden">
-            <button type="submit" className="cursor-pointer">
-              menu
-            </button>
+            <Button type="submit" className="cursor-pointer">
+              <Menu />
+            </Button>
           </form>
           <form action={darkAction}>
-            <button type="submit" className="cursor-pointer">
-              dark
-            </button>
+            <Button type="submit">
+              <MoonStar />
+            </Button>
           </form>
         </header>
         <aside
@@ -89,19 +77,7 @@ export default async function Home() {
           </nav>
         </aside>
         <div className="flex min-h-dvh flex-col border pt-16 sm:ps-64">
-          <main className="shrink-0 grow p-6">
-            <Image
-              className="dark:invert"
-              src="/next.svg"
-              alt="Next.js logo"
-              width={100}
-              height={20}
-              priority
-            />
-            <form action={rs232Action}>
-              <Button type="submit">Click me</Button>
-            </form>
-          </main>
+          <main className="shrink-0 grow p-6"></main>
           <footer className="p-6">&copy;2025 created by Lee</footer>
         </div>
       </div>
