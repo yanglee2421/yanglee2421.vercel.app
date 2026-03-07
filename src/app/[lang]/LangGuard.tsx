@@ -1,18 +1,19 @@
 "use client";
-import { LANGUAGES } from "@/shared/constant";
-import { calculateLocale, calculateLocalePathname } from "@yotulee/run";
+import { LocaleContext } from "@/shared/LocaleContext";
 import { redirect, usePathname } from "next/navigation";
+import React from "react";
 
 type LangGuardProps = React.PropsWithChildren<{
-  cookieLang: string;
+  locale: string;
 }>;
 
 export const LangGuard = (props: LangGuardProps) => {
-  const pathname = usePathname();
+  const localeService = React.use(LocaleContext);
 
-  const locales = LANGUAGES.slice();
-  const locale = calculateLocale(props.cookieLang, locales);
-  const localePathname = calculateLocalePathname(pathname, locale, locales);
+  const pathname = usePathname();
+  const localePathname = localeService.resolvePathname(pathname);
+
+  localeService.setLocale(props.locale);
 
   if (localePathname !== pathname) {
     redirect(localePathname);

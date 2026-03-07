@@ -14,11 +14,11 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { LANGUAGES } from "@/shared/constant";
-import { calculateLocalePathname } from "@yotulee/run";
+import { LocaleContext } from "@/shared/LocaleContext";
 import { ChevronRight, type LucideIcon } from "lucide-react";
 import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
+import React from "react";
 
 export function NavMain({
   items,
@@ -34,7 +34,8 @@ export function NavMain({
     }[];
   }[];
 }) {
-  const params = useParams();
+  const localeService = React.use(LocaleContext);
+
   const pathname = usePathname();
 
   return (
@@ -59,11 +60,7 @@ export function NavMain({
               <CollapsibleContent>
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => {
-                    const linkHref = calculateLocalePathname(
-                      subItem.url,
-                      String(params.lang) || LANGUAGES[0],
-                      [...LANGUAGES],
-                    );
+                    const linkHref = localeService.resolvePathname(subItem.url);
 
                     return (
                       <SidebarMenuSubItem key={subItem.title}>

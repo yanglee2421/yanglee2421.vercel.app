@@ -12,8 +12,8 @@ importers:
         specifier: ^1.2.4
         version: 1.2.4(@types/react@19.2.14)(react@19.2.4)
       '@yotulee/run':
-        specifier: jsr:^0.0.14
-        version: '@jsr/yotulee__run@0.0.14'
+        specifier: jsr:^0.0.15
+        version: '@jsr/yotulee__run@0.0.15'
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -386,8 +386,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@jsr/yotulee__run@0.0.14':
-    resolution: {integrity: sha512-7qXrOrBvq3OVS3etPyXnT1dwITmMy4UpRqFFPfiPmIwu4HQy+VKRHwoD25LVGoHZnTKaZkm2RLLOgeTAOVXR6w==, tarball: https://npm.jsr.io/~/11/@jsr/yotulee__run/0.0.14.tgz}
+  '@jsr/yotulee__run@0.0.15':
+    resolution: {integrity: sha512-2+4eFM4zpA2haY9VpmfrCgFic8vpek5CS1qILMwv0qoAGsc0dKyDnKxf+1DxX7cMBvig/W491QE7ewv8t6tMZA==, tarball: https://npm.jsr.io/~/11/@jsr/yotulee__run/0.0.15.tgz}
 
   '@napi-rs/wasm-runtime@0.2.12':
     resolution: {integrity: sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ==}
@@ -3151,7 +3151,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@jsr/yotulee__run@0.0.14': {}
+  '@jsr/yotulee__run@0.0.15': {}
 
   '@napi-rs/wasm-runtime@0.2.12':
     dependencies:
