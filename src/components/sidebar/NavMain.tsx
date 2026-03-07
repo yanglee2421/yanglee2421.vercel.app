@@ -14,33 +14,11 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { LANGUAGES } from "@/shared/constant";
+import { calculateLocalePathname } from "@yotulee/run";
 import { ChevronRight, type LucideIcon } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-
-const normalizePath = (path: string) => {
-  const satartsWithSlash = path.startsWith("/");
-  const endsWithSlash = path.endsWith("/");
-  let pathValue = path;
-
-  if (endsWithSlash) {
-    pathValue = pathValue.replace(/\/+$/, "");
-  }
-
-  if (!satartsWithSlash) {
-    pathValue = `/${pathValue}`;
-  }
-
-  return pathValue;
-};
-
-const calculateLocalePath = (url: string, params: Record<string, string>) => {
-  const { lang } = params;
-  const normalizedUrl = normalizePath(url);
-  const segments = normalizedUrl.split("/").filter(Boolean);
-
-  return url;
-};
+import { useParams, usePathname } from "next/navigation";
 
 export function NavMain({
   items,
@@ -57,6 +35,7 @@ export function NavMain({
   }[];
 }) {
   const params = useParams();
+  const pathname = usePathname();
 
   return (
     <SidebarGroup>
@@ -79,15 +58,26 @@ export function NavMain({
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <Link href={calculateLocalePath(subItem.url, params)}>
-                          <span>{subItem.title}</span>
-                        </Link>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
+                  {item.items?.map((subItem) => {
+                    const linkHref = calculateLocalePathname(
+                      subItem.url,
+                      String(params.lang) || LANGUAGES[0],
+                      [...LANGUAGES],
+                    );
+
+                    return (
+                      <SidebarMenuSubItem key={subItem.title}>
+                        <SidebarMenuSubButton
+                          asChild
+                          isActive={pathname === linkHref}
+                        >
+                          <Link href={linkHref}>
+                            <span>{subItem.title}</span>
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    );
+                  })}
                 </SidebarMenuSub>
               </CollapsibleContent>
             </SidebarMenuItem>
