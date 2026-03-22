@@ -1,0 +1,14 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.fontSize": 20,
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+
+  "workbench.iconTheme": "vscode-icons",
+  "workbench.colorTheme": "Dark Modern",
+
+  "js/ts.experimental.useTsgo": true
+}

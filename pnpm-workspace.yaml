@@ -1,4 +1,5 @@
 onlyBuiltDependencies:
   - '@serialport/bindings-cpp'
+  - esbuild
   - sharp
   - unrs-resolver
