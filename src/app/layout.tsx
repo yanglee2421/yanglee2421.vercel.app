@@ -1,18 +1,6 @@
-import clsx from "clsx";
-import { cookies } from "next/headers";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import type { Metadata } from "next";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -24,18 +12,17 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookie = await cookies();
-  const dark = cookie.get("dark");
-
   return (
-    <html lang="en">
-      <body
-        className={clsx(
-          `${geistSans.variable} ${geistMono.variable} antialiased`,
-          dark?.value && "dark",
-        )}
-      >
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -1,0 +1,2 @@
+export const LANG_COOKIE_NAME = "lang";
+export const LANGUAGES = Object.freeze(["en", "zh"]);
