@@ -17,7 +17,7 @@ interface Env {
 const factory = createFactory<Env>({
   initApp: (app) => {
     app.use(async (c, next) => {
-      const db = createDB(c.env.PGSQL_URL);
+      const db = createDB(process.env.PGSQL_URL!);
 
       c.set("db", db);
       await next();
