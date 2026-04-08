@@ -7,12 +7,7 @@ export type DB = ReturnType<typeof createDB>;
 
 export const createDB = (connectionString: string) => {
   const client = new Pool({ connectionString, ssl: false });
-
-  const db = drizzle({
-    schema,
-    relations,
-    client,
-  });
+  const db = drizzle({ schema, relations, client });
 
   return db;
 };
