@@ -6,7 +6,11 @@ export default function Page() {
         <div className="bg-muted/50 aspect-video rounded-xl" />
         <div className="bg-muted/50 aspect-video rounded-xl" />
       </div>
-      <div className="bg-muted/50 min-h-screen flex-1 rounded-xl md:min-h-min" />
+      <div className="bg-muted/50 min-h-screen flex-1 rounded-xl md:min-h-min" >
+      <pre>
+      {JSON.stringify(process.env, null, 2)}
+      </pre>
+      </div>
     </>
   );
 }

@@ -1,7 +1,6 @@
 import type { DB } from "@/db";
 import { createDB } from "@/db";
 import * as schema from "@/db/schema";
-import { env } from "hono/adapter";
 import { createFactory } from "hono/factory";
 import { logger } from "hono/logger";
 import { handle } from "hono/vercel";
@@ -62,14 +61,6 @@ const createMockApp = () => {
   const app = factory.createApp();
 
   app.get("/hello", ...helloHanldes);
-  app.get("/hello/:name", async (c) => {
-    const { PGSQL_URL } = env<{ PGSQL_URL: string }>(c);
-    const dbUrl = PGSQL_URL || process.env.PGSQL_URL;
-
-    return c.json({
-      message: dbUrl,
-    });
-  });
 
   return app;
 };
