@@ -1,9 +1,12 @@
 import type { DB } from "@/db";
 import { createDB } from "@/db";
 import * as schema from "@/db/schema";
+import { env } from "hono/adapter";
 import { createFactory } from "hono/factory";
 import { logger } from "hono/logger";
 import { handle } from "hono/vercel";
+
+export const dynamic = "force-dynamic"; // 强制 Next.js 在运行时执行，不要在构建时静态预渲染
 
 interface Env {
   Variables: {
@@ -17,7 +20,11 @@ interface Env {
 const factory = createFactory<Env>({
   initApp: (app) => {
     app.use(async (c, next) => {
-      const db = createDB(process.env.PGSQL_URL!);
+      // 兼容 Node runtime (process.env) 和 Edge runtime (env)
+      const { PGSQL_URL } = env<{ PGSQL_URL: string }>(c);
+      const dbUrl = PGSQL_URL || process.env.PGSQL_URL!;
+
+      const db = createDB(dbUrl);
 
       c.set("db", db);
       await next();
@@ -58,8 +65,11 @@ const createMockApp = () => {
 
   app.get("/hello", ...helloHanldes);
   app.get("/hello/:name", async (c) => {
+    const { PGSQL_URL } = env<{ PGSQL_URL: string }>(c);
+    const dbUrl = PGSQL_URL || process.env.PGSQL_URL;
+
     return c.json({
-      message: process.env.PGSQL_URL,
+      message: dbUrl,
     });
   });
 
