@@ -57,6 +57,11 @@ const createMockApp = () => {
   const app = factory.createApp();
 
   app.get("/hello", ...helloHanldes);
+  app.get("/hello/:name", async (c) => {
+    return c.json({
+      message: process.env.PGSQL_URL,
+    });
+  });
 
   return app;
 };
