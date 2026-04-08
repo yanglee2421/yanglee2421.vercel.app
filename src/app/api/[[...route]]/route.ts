@@ -5,8 +5,6 @@ import { createFactory } from "hono/factory";
 import { logger } from "hono/logger";
 import { handle } from "hono/vercel";
 
-export const dynamic = "force-dynamic"; // 强制 Next.js 在运行时执行，不要在构建时静态预渲染
-
 interface Env {
   Variables: {
     db: DB;
@@ -19,9 +17,7 @@ interface Env {
 const factory = createFactory<Env>({
   initApp: (app) => {
     app.use(async (c, next) => {
-      const dbUrl =
-        "postgresql://dev:-postgresql2026@pgm-bp18b9078f65495bno.pg.rds.aliyuncs.com:5432/nextjs";
-      const db = createDB(dbUrl);
+      const db = createDB(process.env.PGSQL_URL!);
 
       c.set("db", db);
       await next();
