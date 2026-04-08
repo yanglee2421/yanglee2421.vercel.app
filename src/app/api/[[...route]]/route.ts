@@ -20,10 +20,8 @@ interface Env {
 const factory = createFactory<Env>({
   initApp: (app) => {
     app.use(async (c, next) => {
-      // 兼容 Node runtime (process.env) 和 Edge runtime (env)
-      const { PGSQL_URL } = env<{ PGSQL_URL: string }>(c);
-      const dbUrl = PGSQL_URL || process.env.PGSQL_URL!;
-
+      const dbUrl =
+        "postgresql://dev:-postgresql2026@pgm-bp18b9078f65495bno.pg.rds.aliyuncs.com:5432/nextjs";
       const db = createDB(dbUrl);
 
       c.set("db", db);
