@@ -9,5 +9,7 @@
   "git.confirmSync": false,
   "git.enableSmartCommit": true,
   "workbench.iconTheme": "vscode-icons",
-  "workbench.colorTheme": "Dark Modern"
+  "workbench.colorTheme": "Dark Modern",
+
+  "css.lint.unknownAtRules": "ignore"
 }
