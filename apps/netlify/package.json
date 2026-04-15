@@ -22,8 +22,6 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.16",
     "@types/jsonwebtoken": "^9.0.10",
-    "prettier": "^3.7.4",
-    "prettier-plugin-tailwindcss": "^0.7.2",
     "prisma": "6.18.0",
     "tailwindcss": "^4.1.16"
   }
