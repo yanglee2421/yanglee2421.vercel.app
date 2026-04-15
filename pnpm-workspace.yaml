@@ -1,9 +1,10 @@
 packages:
-  - 'apps/*'
-  - 'packages/*'
+  - apps/*
+  - packages/*
 
 onlyBuiltDependencies:
   - '@serialport/bindings-cpp'
   - esbuild
+  - msw
   - sharp
   - unrs-resolver
