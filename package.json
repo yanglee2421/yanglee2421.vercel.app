@@ -2,17 +2,6 @@
   "name": "yanglee2421.vercel.app",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "db:push": "drizzle-kit push",
-    "db:pull": "drizzle-kit pull",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
-  },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",
     "@yotulee/run": "jsr:^0.0.15",
@@ -21,7 +10,6 @@
     "drizzle-orm": "1.0.0-beta.20",
     "hono": "^4.12.8",
     "lucide-react": "^0.562.0",
-    "next": "16.1.1",
     "node-fxplc": "^0.1.6",
     "pg": "^8.20.0",
     "react": "19.2.3",
@@ -40,7 +28,6 @@
     "eslint": "^9.39.4",
     "eslint-config-next": "16.1.6",
     "lucide-react": "^0.577.0",
-    "next": "16.1.6",
     "next-themes": "^0.4.6",
     "postcss": "^8.5.8",
     "prettier": "^3.8.1",

@@ -1,0 +1,6 @@
+{
+  "framework": "nextjs",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm --filter @yanglee2421/vercel build",
+  "devCommand": "pnpm --filter @yanglee2421/vercel dev"
+}
