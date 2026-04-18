@@ -7,14 +7,20 @@ export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
   vite: {
     plugins: [tailwindcss()],
+    ssr: {
+      noExternal: ["schema", "db"],
+    },
   },
   modules: ["@nuxt/ui"],
   runtimeConfig: {},
   nitro: {
-    routeRules: {
-      "/api/chat": {
-        proxy: "https://spark-api-open.xf-yun.com/v1/chat/completions",
-      },
+    routeRules: {},
+    externals: {
+      inline: ["schema", "db"],
     },
+  },
+
+  build: {
+    transpile: ["schema", "db"],
   },
 });

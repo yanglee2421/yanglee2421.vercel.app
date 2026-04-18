@@ -7,22 +7,18 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare && prisma generate",
-    "db:generate": "prisma generate"
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxt/ui": "^4.1.0",
-    "@prisma/client": "6.18.0",
-    "jsonwebtoken": "^9.0.2",
-    "nuxt": "^4.2.0",
+    "@nuxt/ui": "^4.6.1",
+    "db": "workspace:*",
+    "nuxt": "^4.4.2",
+    "schema": "workspace:*",
     "vue": "^3.5.22",
-    "vue-router": "^4.6.3",
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.1.16",
-    "@types/jsonwebtoken": "^9.0.10",
-    "prisma": "6.18.0",
-    "tailwindcss": "^4.1.16"
+    "@tailwindcss/vite": "^4.2.2",
+    "tailwindcss": "^4.2.2"
   }
 }
