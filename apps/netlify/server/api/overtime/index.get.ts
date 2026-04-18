@@ -1,6 +1,6 @@
-import { prisma } from "~~/server/prisma";
-import { validateJWT, appendCors } from "~~/server/utils";
+import { OvertimeRecordModel } from "db";
 import { z } from "zod";
+import { appendCors } from "~~/server/utils";
 
 const querySchema = z.object({
   pageIndex: z
@@ -11,7 +11,7 @@ const querySchema = z.object({
           .success,
       {
         message: "pageIndex must be a non-negative integer",
-      }
+      },
     )
     .transform(Number),
   pageSize: z
@@ -22,30 +22,18 @@ const querySchema = z.object({
           .success,
       {
         message: "pageSize must be a positive integer",
-      }
+      },
     )
     .transform(Number),
 });
 
 export default defineEventHandler(async (e) => {
   appendCors(e);
-  const user = await validateJWT(e);
   const params = await getValidatedQuery(e, querySchema.parse);
-  const count = await prisma.overtimeRecord.count({
-    where: {
-      userId: user.id,
-    },
-  });
-  const overtimeRecords = await prisma.overtimeRecord.findMany({
-    where: {
-      userId: user.id,
-    },
-    skip: params.pageIndex * params.pageSize,
-    take: params.pageSize,
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  const rows = await OvertimeRecordModel.find()
+    .skip(params.pageIndex * params.pageSize)
+    .limit(params.pageSize);
+  const count = await OvertimeRecordModel.countDocuments();
 
-  return { count, rows: overtimeRecords };
+  return { rows, count };
 });

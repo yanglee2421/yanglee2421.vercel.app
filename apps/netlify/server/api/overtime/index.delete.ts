@@ -1,6 +1,5 @@
-import { appendCors } from "~~/server/utils";
-import { prisma } from "~~/server/prisma";
 import { z } from "zod";
+import { appendCors } from "~~/server/utils";
 
 const bodySchema = z.object({
   id: z.string().array(),
@@ -8,11 +7,7 @@ const bodySchema = z.object({
 
 export default defineEventHandler(async (e) => {
   appendCors(e);
-  const { id } = await readValidatedBody(e, bodySchema.parse);
+  const body = readValidatedBody(e, bodySchema.parse);
 
-  const overtimeRecord = await prisma.overtimeRecord.deleteMany({
-    where: { id: { in: id } },
-  });
-
-  return overtimeRecord;
+  return { body };
 });

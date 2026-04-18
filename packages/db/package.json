@@ -1,0 +1,13 @@
+{
+  "name": "db",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "dev": "node ./src/index.ts"
+  },
+  "dependencies": {
+    "mongoose": "^9.4.1"
+  }
+}
