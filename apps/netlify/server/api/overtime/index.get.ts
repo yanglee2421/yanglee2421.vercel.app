@@ -32,7 +32,10 @@ export default defineEventHandler(async (e) => {
   const params = await getValidatedQuery(e, querySchema.parse);
   const rows = await OvertimeRecordModel.find()
     .skip(params.pageIndex * params.pageSize)
-    .limit(params.pageSize);
+    .limit(params.pageSize)
+    .sort({
+      createdAt: "desc",
+    });
   const count = await OvertimeRecordModel.countDocuments();
 
   return { rows, count };
