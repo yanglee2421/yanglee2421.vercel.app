@@ -1,3 +1,4 @@
+import { OvertimeRecordModel } from "db";
 import { z } from "zod";
 import { appendCors } from "~~/server/utils";
 
@@ -7,7 +8,16 @@ const bodySchema = z.object({
 
 export default defineEventHandler(async (e) => {
   appendCors(e);
-  const body = readValidatedBody(e, bodySchema.parse);
+  const body = await readValidatedBody(e, bodySchema.parse);
+  const { id } = body;
 
-  return { body };
+  const result = await OvertimeRecordModel.deleteMany({
+    where: {
+      id: {
+        in: id,
+      },
+    },
+  });
+
+  return { body, result };
 });
