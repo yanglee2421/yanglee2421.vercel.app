@@ -1,13 +1,13 @@
 import mongoose, { Schema } from "mongoose";
 
-export const connectToDatabase = () => {
+const connectToDatabase = () => {
   const MONGODB_URL = process.env.MONGODB_URL!;
   return mongoose.connect(MONGODB_URL, { dbName: "Cluster0" });
 };
 
 connectToDatabase();
 
-export const overtimeRecordSchema = new Schema(
+const overtimeRecordSchema = new Schema(
   {
     user: {
       type: String,
@@ -16,6 +16,7 @@ export const overtimeRecordSchema = new Schema(
     date: {
       type: Date,
       required: true,
+      default: Date.now,
     },
     hours: {
       type: Number,
@@ -32,6 +33,7 @@ export const overtimeRecordSchema = new Schema(
   },
   {
     collection: "OvertimeRecord",
+    timestamps: true,
   },
 );
 
