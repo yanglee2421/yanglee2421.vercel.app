@@ -33,9 +33,7 @@ export default defineEventHandler(async (e) => {
   const rows = await OvertimeRecordModel.find()
     .skip(params.pageIndex * params.pageSize)
     .limit(params.pageSize)
-    .sort({
-      createdAt: "desc",
-    });
+    .sort({ createdAt: "asc" });
   const count = await OvertimeRecordModel.countDocuments();
 
   return { rows, count };
