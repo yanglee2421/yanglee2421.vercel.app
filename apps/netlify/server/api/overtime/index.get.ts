@@ -30,11 +30,16 @@ const querySchema = z.object({
 export default defineEventHandler(async (e) => {
   appendCors(e);
   const params = await getValidatedQuery(e, querySchema.parse);
+  const count = await OvertimeRecordModel.countDocuments();
   const rows = await OvertimeRecordModel.find()
     .skip(params.pageIndex * params.pageSize)
     .limit(params.pageSize)
-    .sort({ createdAt: "asc" });
-  const count = await OvertimeRecordModel.countDocuments();
+    .sort({ date: "desc" });
 
-  return { rows, count };
+  return {
+    count,
+    rows: rows.map((row) => {
+      return row.toObject();
+    }),
+  };
 });
