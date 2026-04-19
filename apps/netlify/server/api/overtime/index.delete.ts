@@ -12,11 +12,7 @@ export default defineEventHandler(async (e) => {
   const { id } = body;
 
   const result = await OvertimeRecordModel.deleteMany({
-    where: {
-      id: {
-        in: id,
-      },
-    },
+    _id: { $in: id },
   });
 
   return { body, result };
