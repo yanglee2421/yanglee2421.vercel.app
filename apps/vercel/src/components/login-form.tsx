@@ -1,25 +1,69 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { loginAction } from "@/shared/actions/auth";
+import { useForm } from "@tanstack/react-form";
+import { useMutation } from "@tanstack/react-query";
+import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import React from "react";
+import type { LoginSchema } from "schema";
+import { loginSchema } from "schema";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "./ui/input-group";
+import { Spinner } from "./ui/spinner";
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+type LoginFormProps = React.ComponentProps<"div">;
+
+export const LoginForm = ({ className, ...props }: LoginFormProps) => {
+  const [showPassword, setShowPassword] = React.useState(false);
+
+  const loginMutation = useMutation({
+    mutationFn: async (values: LoginSchema) => {
+      return loginAction(values);
+    },
+  });
+
+  const form = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    } satisfies LoginSchema,
+    onSubmit: async (values) => {
+      await loginMutation.mutateAsync(values.value);
+    },
+    validators: { onChange: loginSchema },
+  });
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8">
+          <form
+            className="p-6 md:p-8"
+            noValidate
+            onSubmit={(e) => {
+              e.preventDefault();
+              form.handleSubmit();
+            }}
+            onReset={() => {
+              form.reset();
+            }}
+          >
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Welcome back</h1>
@@ -27,29 +71,78 @@ export function LoginForm({
                   Login to your Acme Inc account
                 </p>
               </div>
+              <form.Field name="email">
+                {(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel>Email</FieldLabel>
+                      <Input
+                        value={field.state.value}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
+                        placeholder="m@example.com"
+                      />
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  );
+                }}
+              </form.Field>
+              <form.Field name="password">
+                {(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <div className="flex items-center">
+                        <FieldLabel>Password</FieldLabel>
+                        <a
+                          href="#"
+                          className="ms-auto text-sm underline-offset-2 hover:underline"
+                        >
+                          Forgot your password?
+                        </a>
+                      </div>
+                      <InputGroup>
+                        <InputGroupInput
+                          value={field.state.value}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          onBlur={field.handleBlur}
+                          aria-invalid={isInvalid}
+                          type={showPassword ? "text" : "password"}
+                        />
+                        <InputGroupAddon align="inline-end">
+                          <InputGroupButton
+                            onClick={() =>
+                              setShowPassword((previous) => !previous)
+                            }
+                          >
+                            {showPassword ? <Eye /> : <EyeOff />}
+                          </InputGroupButton>
+                        </InputGroupAddon>
+                      </InputGroup>
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  );
+                }}
+              </form.Field>
               <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                />
-              </Field>
-              <Field>
-                <div className="flex items-center">
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <a
-                    href="#"
-                    className="ms-auto text-sm underline-offset-2 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
-                </div>
-                <Input id="password" type="password" required />
-              </Field>
-              <Field>
-                <Button type="submit">Login</Button>
+                <form.Subscribe selector={(s) => [s.canSubmit, s.isSubmitting]}>
+                  {([canSubmit, isSubmitting]) => (
+                    <Button type="submit" disabled={!canSubmit}>
+                      {isSubmitting && <Spinner />}
+                      Login
+                    </Button>
+                  )}
+                </form.Subscribe>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                 Or continue with
@@ -103,4 +196,4 @@ export function LoginForm({
       </FieldDescription>
     </div>
   );
-}
+};

@@ -4,12 +4,14 @@
   "private": true,
   "dependencies": {
     "@yotulee/run": "jsr:^0.0.15",
+    "drizzle-orm": "1.0.0-beta.22",
     "hono": "^4.12.8",
     "node-fxplc": "^0.1.6",
     "serialport": "^13.0.0"
   },
   "devDependencies": {
     "@types/node": "^25.3.5",
+    "drizzle-kit": "1.0.0-beta.23",
     "eslint": "^9.39.4",
     "eslint-config-next": "16.1.6",
     "prettier": "^3.8.1",

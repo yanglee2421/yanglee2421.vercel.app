@@ -11,3 +11,5 @@ export const createDB = (connectionString: string) => {
 
   return db;
 };
+
+export { schema };

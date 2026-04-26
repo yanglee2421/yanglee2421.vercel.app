@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   serverExternalPackages: [],
-  transpilePackages: [],
+  transpilePackages: ["db", "schema"],
   reactCompiler: true,
   typescript: {
     ignoreBuildErrors: true,

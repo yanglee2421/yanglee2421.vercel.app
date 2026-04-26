@@ -1,25 +1,71 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { signupAction } from "@/shared/actions/auth";
+import { useForm } from "@tanstack/react-form";
+import { useMutation } from "@tanstack/react-query";
+import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import React from "react";
+import type { SignupSchema } from "schema";
+import { signupSchema } from "schema";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "./ui/input-group";
+import { Spinner } from "./ui/spinner";
 
-export function SignupForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+type SignupFormProps = React.ComponentProps<"div">;
+
+export const SignupForm = ({ className, ...props }: SignupFormProps) => {
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+
+  const signupMutation = useMutation({
+    mutationFn: async (values: SignupSchema) => {
+      return signupAction(values);
+    },
+  });
+
+  const form = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+    } satisfies SignupSchema,
+    onSubmit: async (values) => {
+      await signupMutation.mutateAsync(values.value);
+    },
+    validators: { onChange: signupSchema },
+  });
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8">
+          <form
+            className="p-6 md:p-8"
+            noValidate
+            onSubmit={(e) => {
+              e.preventDefault();
+              form.handleSubmit();
+            }}
+            onReset={() => {
+              form.reset();
+            }}
+          >
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Create your account</h1>
@@ -27,38 +73,125 @@ export function SignupForm({
                   Enter your email below to create your account
                 </p>
               </div>
-              <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                />
-                <FieldDescription>
-                  We&apos;ll use this to contact you. We will not share your
-                  email with anyone else.
-                </FieldDescription>
-              </Field>
+              <form.Field name="email">
+                {(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel>Email</FieldLabel>
+                      <Input
+                        inputMode="email"
+                        placeholder="m@example.com"
+                        value={field.state.value}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
+                      />
+                      <FieldDescription>
+                        We&apos;ll use this to contact you. We will not share
+                        your email with anyone else.
+                      </FieldDescription>
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  );
+                }}
+              </form.Field>
               <Field>
                 <Field className="grid grid-cols-2 gap-4">
-                  <Field>
-                    <FieldLabel htmlFor="password">Password</FieldLabel>
-                    <Input id="password" type="password" required />
-                  </Field>
-                  <Field>
-                    <FieldLabel htmlFor="confirm-password">
-                      Confirm Password
-                    </FieldLabel>
-                    <Input id="confirm-password" type="password" required />
-                  </Field>
+                  <form.Field name="password">
+                    {(field) => {
+                      const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid;
+
+                      return (
+                        <Field data-invalid={isInvalid}>
+                          <FieldLabel>Password</FieldLabel>
+                          <InputGroup>
+                            <InputGroupInput
+                              value={field.state.value}
+                              onChange={(e) =>
+                                field.handleChange(e.target.value)
+                              }
+                              onBlur={field.handleBlur}
+                              aria-invalid={isInvalid}
+                              type={showPassword ? "text" : "password"}
+                              inputMode="text"
+                            />
+                            <InputGroupAddon align="inline-end">
+                              <InputGroupButton
+                                onClick={() => {
+                                  setShowPassword((previous) => !previous);
+                                }}
+                              >
+                                {showPassword ? <Eye /> : <EyeOff />}
+                              </InputGroupButton>
+                            </InputGroupAddon>
+                          </InputGroup>
+                          {isInvalid && (
+                            <FieldError errors={field.state.meta.errors} />
+                          )}
+                        </Field>
+                      );
+                    }}
+                  </form.Field>
+                  <form.Field name="confirmPassword">
+                    {(field) => {
+                      const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid;
+
+                      return (
+                        <Field data-invalid={isInvalid}>
+                          <FieldLabel>Confirm Password</FieldLabel>
+                          <InputGroup>
+                            <InputGroupInput
+                              value={field.state.value}
+                              onChange={(e) =>
+                                field.handleChange(e.target.value)
+                              }
+                              onBlur={field.handleBlur}
+                              aria-invalid={isInvalid}
+                              type={showConfirmPassword ? "text" : "password"}
+                              inputMode="text"
+                            />
+                            <InputGroupAddon align="inline-end">
+                              <InputGroupButton
+                                onClick={() => {
+                                  setShowConfirmPassword(
+                                    (previous) => !previous,
+                                  );
+                                }}
+                              >
+                                {showConfirmPassword ? <Eye /> : <EyeOff />}
+                              </InputGroupButton>
+                            </InputGroupAddon>
+                          </InputGroup>
+                          {isInvalid && (
+                            <FieldError errors={field.state.meta.errors} />
+                          )}
+                        </Field>
+                      );
+                    }}
+                  </form.Field>
                 </Field>
                 <FieldDescription>
                   Must be at least 8 characters long.
                 </FieldDescription>
               </Field>
               <Field>
-                <Button type="submit">Create Account</Button>
+                <form.Subscribe selector={(s) => [s.canSubmit, s.isSubmitting]}>
+                  {([canSubmit, isSubmitting]) => {
+                    return (
+                      <Button type="submit" disabled={!canSubmit}>
+                        {isSubmitting && <Spinner />}
+                        Create Account
+                      </Button>
+                    );
+                  }}
+                </form.Subscribe>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                 Or continue with
@@ -112,4 +245,4 @@ export function SignupForm({
       </FieldDescription>
     </div>
   );
-}
+};
