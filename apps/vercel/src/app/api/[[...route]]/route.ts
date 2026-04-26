@@ -1,6 +1,5 @@
-import type { DB } from "@/db";
-import { createDB } from "@/db";
-import * as schema from "@/db/schema";
+import type { DB } from "db/postgres";
+import { createDB, schema } from "db/postgres";
 import { createFactory } from "hono/factory";
 import { logger } from "hono/logger";
 import { handle } from "hono/vercel";
