@@ -1,33 +1,20 @@
-import type { DB } from "db/postgres";
-import { createDB, schema } from "db/postgres";
+import { postgres } from "@/shared/instances/postgres";
+import { schema } from "db/postgres";
 import { createFactory } from "hono/factory";
 import { logger } from "hono/logger";
 import { handle } from "hono/vercel";
 
 interface Env {
-  Variables: {
-    db: DB;
-  };
-  Bindings: {
-    PGSQL_URL: string;
-  };
+  Variables: {};
+  Bindings: {};
 }
 
 const factory = createFactory<Env>({
-  initApp: (app) => {
-    app.use(async (c, next) => {
-      const db = createDB(process.env.PGSQL_URL!);
-
-      c.set("db", db);
-      await next();
-    });
-  },
+  initApp: () => {},
 });
 
 const helloHanldes = factory.createHandlers(async (c) => {
-  const db = c.var.db;
-
-  const rows = await db.select().from(schema.users);
+  const rows = await postgres.select().from(schema.users);
 
   return c.json({
     message: "Hello Next.js!",

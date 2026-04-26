@@ -1,5 +1,6 @@
 "use server";
 import { postgres } from "@/shared/instances/postgres";
+import { atFirstOrThrow } from "@yotulee/run";
 import { schema } from "db/postgres";
 import { and, eq } from "drizzle-orm";
 
@@ -9,13 +10,25 @@ interface SignupActionParams {
 }
 
 export const signupAction = async (params: SignupActionParams) => {
-  const data = await postgres
-    .insert(schema.users)
-    .values({
-      name: params.email,
-      password: params.password,
-    })
-    .returning();
+  const data = await postgres.transaction(async (tx) => {
+    const [roleGroup] = await tx
+      .insert(schema.roleGroups)
+      .values({ name: "default" })
+      .returning();
+
+    const role = await tx
+      .insert(schema.roles)
+      .values({ name: "owner", groupId: roleGroup.id });
+
+    const results = await tx
+      .insert(schema.users)
+      .values({
+        name: params.email,
+        password: params.password,
+        roleGroupId: roleGroup.id,
+      })
+      .returning();
+  });
 
   return data;
 };
@@ -26,7 +39,7 @@ interface LoginActionParams {
 }
 
 export const loginAction = async (params: LoginActionParams) => {
-  const user = await postgres
+  const users = await postgres
     .select()
     .from(schema.users)
     .where(
@@ -36,6 +49,8 @@ export const loginAction = async (params: LoginActionParams) => {
       ),
     )
     .limit(1);
+
+  const user = atFirstOrThrow(users);
 
   return user;
 };

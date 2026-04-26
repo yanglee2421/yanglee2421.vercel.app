@@ -1392,10 +1392,30 @@ export const decryptedSecretsInVault = vault
 
 export const app = pgSchema("app");
 
+export const kvTable = app.table("kv", {
+  key: text("key").primaryKey(),
+  value: text("value"),
+});
+
+export const roleGroups = app.table("role_groups", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  name: text("name").notNull(),
+});
+
+export const permissions = app.table("permissions", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  name: text("name").notNull(),
+  label: text("label"),
+});
+
 export const users = app.table("users", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: text("name"),
   password: text("password"),
+  email: text("email").unique(),
+  roleGroupId: integer("role_group_id")
+    .notNull()
+    .references(() => roleGroups.id),
 });
 
 export const sessions = app.table("sessions", {
@@ -1404,7 +1424,57 @@ export const sessions = app.table("sessions", {
   token: text("token"),
 });
 
-export const kvTable = app.table("kv", {
-  key: text("key").primaryKey(),
-  value: text("value"),
+export const organizations = app.table("organizations", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  name: text("name").notNull(),
+  roleGroupId: integer("role_group_id")
+    .notNull()
+    .references(() => roleGroups.id),
 });
+
+export const roles = app.table("roles", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  name: text("name").notNull(),
+  groupId: integer("group_id")
+    .notNull()
+    .references(() => roleGroups.id),
+});
+
+// Many to many map tables
+
+export const userOrganizations = app.table(
+  "user_organizations",
+  {
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id),
+    organizationId: integer("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    role: text("role").notNull(),
+  },
+  (table) => [
+    primaryKey({
+      columns: [table.userId, table.organizationId],
+      name: "user_organizations_pkey",
+    }),
+  ],
+);
+
+export const rolePermissions = app.table(
+  "role_permissions",
+  {
+    roleId: integer("role_id")
+      .notNull()
+      .references(() => roles.id),
+    permissionId: integer("permission_id")
+      .notNull()
+      .references(() => permissions.id),
+  },
+  (table) => [
+    primaryKey({
+      columns: [table.roleId, table.permissionId],
+      name: "role_permissions_pkey",
+    }),
+  ],
+);
