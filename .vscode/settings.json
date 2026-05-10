@@ -1,6 +1,7 @@
 {
   "editor.codeActionsOnSave": {
-    "source.organizeImports": "explicit"
+    "source.organizeImports": "explicit",
+    "source.fixAll.oxc": "explicit"
   },
   "editor.fontSize": 20,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
